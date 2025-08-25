@@ -238,7 +238,7 @@ context:
 - problemStatement: ${inputData.problemStatement}
 - keyFindings: ${(inputData.keyFindings ?? []).join("; ")}
 - designSystemBrief: ${inputData.designSystemBrief ?? ""}`;
-
+    // Connect GitHub MCP toolsets to the developer agent dynamically
     const response = await agent.stream([{ role: "user", content: prompt }]);
     let text = "";
     for await (const chunk of response.textStream) text += chunk;
@@ -304,7 +304,7 @@ const tasksAndImplementation = createStep({
 Return ONLY JSON: { tasksImplementation: { tasks: string[], dependencies: string[] } }.
 
 storiesEpics: ${(inputData.storiesEpics ?? []).join("\n- ")}`;
-
+    // Connect GitHub MCP toolsets to the developer agent dynamically
     const response = await agent.stream([{ role: "user", content: prompt }]);
     let text = "";
     for await (const chunk of response.textStream) text += chunk;
