@@ -5,6 +5,7 @@ import { bddSpecialistAgent } from "./agents/bdd-specialist/agent";
 import { codeReviewerAgent } from "./agents/code-reviewer/agent";
 import { developerAgent } from "./agents/developer-agent/agent";
 import { productOwnerAgent } from "./agents/product-owner/agent";
+import { planCreatorAgent } from "./agents/plan-creator/agent";
 import { weatherAgent } from "./agents/weather-agent";
 import { memoryWorkflow } from "./workflows/memory-workflow";
 import { techlibsAgentWorkflow } from "./workflows/techlibs-agent-workflow";
@@ -17,7 +18,8 @@ export const mastra = new Mastra({
     productOwnerAgent, 
     bddSpecialistAgent, 
     developerAgent, 
-    codeReviewerAgent 
+    codeReviewerAgent,
+    planCreatorAgent,
   },
   storage: new LibSQLStore({
     // Use persistent storage for telemetry, evals, etc.

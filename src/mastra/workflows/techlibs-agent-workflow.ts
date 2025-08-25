@@ -1,6 +1,7 @@
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 import { productOwnerAgent } from "../agents/product-owner/agent";
+import { planCreatorAgent } from "../agents/plan-creator/agent";
 
 // Input schema as specified by the plan
 const initInputSchema = z.object({
@@ -35,6 +36,10 @@ const stateSchema = z.object({
   definitionOfDone: z.string().optional(),
   roadmapPlan: z.string().optional(),
   prd: z.string().optional(),
+  // Plan Creator outputs
+  planDoc: z.string().optional(),
+  overviewDoc: z.string().optional(),
+  mermaidSuggestions: z.string().optional(),
 });
 
 // Final output schema as specified by the plan
@@ -356,10 +361,12 @@ const roadmapPlan = createStep({
   inputSchema: stateSchema,
   outputSchema: stateSchema,
   execute: async ({ inputData, mastra }) => {
-    const agent = mastra?.getAgent("productOwnerAgent");
+    // Prefer Plan Creator Agent if available, fallback to Product Owner
+    const agent =
+      mastra?.getAgent("planCreatorAgent") ?? mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
-    const prompt = `Create a concise roadmap plan with milestones and rough timelines.
+    const prompt = `Create a concise roadmap plan with milestones, phases, and timelines.
 Return ONLY JSON: { roadmapPlan: string }.`;
 
     const response = await agent.stream([{ role: "user", content: prompt }]);
