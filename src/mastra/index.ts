@@ -1,24 +1,21 @@
-
-import { Mastra } from '@mastra/core/mastra';
-import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
-import { weatherWorkflow } from './workflows/weather-workflow';
-import { memoryWorkflow } from './workflows/memory-workflow';
-import { weatherAgent } from './agents/weather-agent';
-import { mcp } from './mcp';
+import { Mastra } from "@mastra/core/mastra";
+import { LibSQLStore } from "@mastra/libsql";
+import { PinoLogger } from "@mastra/loggers";
+import { productOwner } from "./agents/productOwner";
+import { weatherAgent } from "./agents/weather-agent";
+import { memoryWorkflow } from "./workflows/memory-workflow";
+import { techlibsAgentWorkflow } from "./workflows/techlibs-agent-workflow";
+import { weatherWorkflow } from "./workflows/weather-workflow";
 
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow, memoryWorkflow },
-  agents: { weatherAgent },
+  workflows: { weatherWorkflow, memoryWorkflow, techlibsAgentWorkflow },
+  agents: { weatherAgent, productOwner },
   storage: new LibSQLStore({
     // Use persistent storage for telemetry, evals, etc.
-    url: 'file:../mastra.db',
+    url: "file:../mastra.db",
   }),
-  // Use MCP memory for the main Mastra instance
-  memory: mcp.memory,
   logger: new PinoLogger({
-    name: 'Mastra',
-    level: 'info',
+    name: "Mastra",
+    level: "info",
   }),
 });
-

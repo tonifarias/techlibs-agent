@@ -168,3 +168,5 @@ console.log('Memory available:', !!mcp.memory);
 - [ ] Memory analytics and insights
 - [ ] Multi-user memory isolation
 - [ ] Memory backup and restore
+
+
