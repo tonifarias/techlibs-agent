@@ -1,9 +1,7 @@
 import { createWorkflow } from "@mastra/core/workflows";
 import { stateSchema } from "../context";
-import {
-  aiResearchAndDiscovery,
-  initInputSchema,
-} from "./techlibs-agent-workflow";
+import { initInputSchema } from "./techlibs-agent/dtos/init-input.dto";
+import { aiResearchAndDiscovery } from "./techlibs-agent/steps/ai-research-and-discovery/step";
 
 export const aiResearchWorkflow = createWorkflow({
   id: "ai-research-workflow",

@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant WF as Workflow
+  participant CR as CodeReviewerAgent
+  participant JT as JSONExtractor
+
+  WF->>CR: Prompt with tasksImplementation.tasks
+  CR-->>WF: Text response (JSON or fenced JSON)
+  WF->>JT: extractFirstJsonObject(text)
+  JT-->>WF: {definitionOfDone}
+

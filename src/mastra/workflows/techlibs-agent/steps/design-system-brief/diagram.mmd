@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant WF as Workflow
+  participant PO as ProductOwnerAgent
+  participant JT as JSONExtractor
+
+  WF->>PO: Prompt with problemStatement, personas, journeys, useCases
+  PO-->>WF: Text response (JSON or fenced JSON)
+  WF->>JT: extractFirstJsonObject(text)
+  JT-->>WF: {designSystemBrief}
+
