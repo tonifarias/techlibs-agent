@@ -1,10 +1,7 @@
 TechLibs Agent
 ===============
 
-Specialized AI agent builders for Blockchain & Web2 companies, transforming manual business processes into intelligent automated systems. We combine cutting-edge AI/ML technology with deep blockchain expertise to deliver production-ready solutions.
-
-### What is OctoplusAI?
-OctoplusAI is our agentic orchestrator that leads development end-to-end — from backlog to deployment, from product knowledge to low-level coding — powered by a backbone of 40+ specialized agents for a seamless developer experience.
+TechLibs Agent is our agentic orchestrator that leads development end-to-end — from backlog to deployment, from product knowledge to low-level coding — powered by a backbone of 40+ specialized agents for a seamless developer experience.
 
 ### Key Capabilities
 - **Intelligent automation**: Orchestrates multi-agent workflows to reduce manual effort and accelerate delivery.
