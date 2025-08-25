@@ -1,15 +1,12 @@
-import { describe, it, expect } from "vitest";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 import fs from "node:fs/promises";
 import os from "node:os";
-import { changelogTool } from "../changelog-tool";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+import { changelogTool } from "../../src/mastra/tools/changelog-tool";
 
 describe("Changelog Tool", () => {
   it("generates a changelog markdown from the workflow", async () => {
-    const thisFile = fileURLToPath(import.meta.url);
-    const testDir = path.dirname(thisFile);
-    const projectRoot = path.resolve(testDir, "../../../..");
+    const projectRoot = path.resolve(process.cwd());
     const workflowPath = path.resolve(
       projectRoot,
       "src/mastra/workflows/techlibs-agent-workflow.ts"
@@ -37,5 +34,3 @@ describe("Changelog Tool", () => {
     expect(md).toContain("## Contracts");
   });
 });
-
-
