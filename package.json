@@ -8,6 +8,7 @@
     "build": "mastra build",
     "start": "mastra start",
     "parallizer:example": "tsx examples/parallizer-example.ts",
+    "agent:discovery": "tsx examples/agent-discovery-example.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [],
