@@ -1,4 +1,5 @@
-TechLibs Agent
+
+
 ===============
 
 TechLibs Agent is our agentic orchestrator that leads development end-to-end — from backlog to deployment, from product knowledge to low-level coding — powered by a backbone of 40+ specialized agents for a seamless developer experience.
