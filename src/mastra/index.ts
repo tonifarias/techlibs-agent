@@ -6,6 +6,7 @@ import { codeReviewerAgent } from "./agents/code-reviewer/agent";
 import { developerAgent } from "./agents/developer-agent/agent";
 import { firefliesAgent } from "./agents/fireflies-agent/agent";
 import { mastraArchitectAgent } from "./agents/mastra-architect/agent";
+import { parallizerAgent } from "./agents/parallizer/agent";
 import { productOwnerAgent } from "./agents/product-owner/agent";
 import { weatherAgent } from "./agents/weather-agent";
 import { firefliesWorkflow } from "./workflows/fireflies-workflow";
@@ -29,6 +30,7 @@ export const mastra = new Mastra({
     developerAgent,
     codeReviewerAgent,
     firefliesAgent,
+    parallizerAgent,
     mastraArchitectAgent,
   },
   storage: new LibSQLStore({

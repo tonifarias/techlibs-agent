@@ -1,4 +1,4 @@
-import { mastra } from "../src/mastra/index.js";
+import { runWorkflow } from "../utils/workflowRunner";
 
 async function demonstrateMemory() {
   console.log("🚀 Starting Memory Demonstration...\n");
@@ -6,7 +6,7 @@ async function demonstrateMemory() {
   try {
     // Example 1: Store user preferences
     console.log("📝 Example 1: Storing User Preferences");
-    const storeResult = await mastra.runWorkflow("memoryWorkflow", {
+    const storeResult = await runWorkflow("memoryWorkflow", {
       action: "store_preferences",
       name: "John",
       preferredLocation: "San Francisco",
@@ -17,7 +17,7 @@ async function demonstrateMemory() {
 
     // Example 2: Get personalized weather
     console.log("🌤️ Example 2: Getting Personalized Weather");
-    const weatherResult = await mastra.runWorkflow("memoryWorkflow", {
+    const weatherResult = await runWorkflow("memoryWorkflow", {
       action: "get_weather",
       name: "John",
     });
@@ -25,7 +25,7 @@ async function demonstrateMemory() {
 
     // Example 3: Update location history
     console.log("📍 Example 3: Updating Location History");
-    const historyResult = await mastra.runWorkflow("memoryWorkflow", {
+    const historyResult = await runWorkflow("memoryWorkflow", {
       action: "update_history",
       name: "John",
       location: "Golden Gate Park",
@@ -57,5 +57,3 @@ async function demonstrateMemory() {
 
 // Run the demonstration
 demonstrateMemory().catch(console.error);
-
-

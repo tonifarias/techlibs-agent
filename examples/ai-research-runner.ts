@@ -1,4 +1,4 @@
-import { mastra } from "../src/mastra/index.js";
+import { runWorkflow } from "../utils/workflowRunner";
 
 async function main() {
   const problemStatement =
@@ -9,7 +9,7 @@ async function main() {
     .filter(Boolean);
   const assets = (process.env.ASSETS ?? "").split("||").filter(Boolean);
 
-  const result = await mastra.runWorkflow("ai-research-workflow", {
+  const result = await runWorkflow("ai-research-workflow", {
     problemStatement,
     companyContext,
     constraints,

@@ -1,3 +1,22 @@
+<<<<<<< HEAD
+### Project Structure
+- `src/mastra/agents/`: Example agents (e.g., `weather-agent.ts`).
+- `src/mastra/tools/`: Example tools invoked by agents.
+- `src/mastra/workflows/`: Example workflows orchestrating agents and tools.
+- `src/mastra/index.ts`: Entrypoint wiring agents/workflows.
+
+### Parallizer Agent
+
+The Parallizer orchestrates a DAG of tasks (tools or agents) with concurrency limits, retries, and timeouts.
+
+Run the example:
+
+```bash
+pnpm tsx examples/parallizer-example.ts
+```
+
+Optional: set `GITHUB_MCP_PAT` to enable GitHub MCP tools; the system continues without them if missing.
+=======
 
 
 TechLibs Agent is our agentic orchestrator that leads development end-to-end — from backlog to deployment, from product knowledge to low-level coding — powered by a backbone of specialized agents for a seamless developer experience.
@@ -105,3 +124,4 @@ src/
 
 ### Mastra Architect (Scaffolder)
 - An agent that follows Mastra best practices to generate new agents/tools/gates/steps from user prompts. See `src/mastra/agents/mastra-architect/`.
+>>>>>>> 8a73e83aa4b361e095b193e47d0bc77195a7dd9c
