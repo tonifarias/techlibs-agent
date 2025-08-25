@@ -1,13 +1,10 @@
-import { openai } from '@ai-sdk/openai';
-import { Agent } from '@mastra/core/agent';
-import { Memory } from '@mastra/memory';
-import { LibSQLStore } from '@mastra/libsql';
-import { weatherTool } from '../tools/weather-tool';
-import { memoryTool } from '../tools/memory-tool';
-import { mcp } from '../mcp';
+import { openai } from "@ai-sdk/openai";
+import { Agent } from "@mastra/core/agent";
+import { memoryTool } from "../tools/memory-tool";
+import { weatherTool } from "../tools/weather-tool";
 
 export const weatherAgent = new Agent({
-  name: 'Weather Agent',
+  name: "Weather Agent",
   instructions: `
       You are a helpful weather assistant that provides accurate weather information and can help planning activities based on the weather.
 
@@ -26,7 +23,6 @@ export const weatherAgent = new Agent({
       Use the weatherTool to fetch current weather data.
       Use the memoryTool to store and retrieve user preferences and past interactions.
 `,
-  model: openai('gpt-4o-mini'),
+  model: openai("gpt-4o-mini"),
   tools: { weatherTool, memoryTool },
-  memory: mcp.memory, // Use MCP memory instead of local memory
 });
