@@ -1,15 +1,11 @@
 import { openai } from "@ai-sdk/openai";
 import { Agent } from "@mastra/core/agent";
-import { mcp } from "../../mcp";
 import { memoryTool } from "../../tools/memory-tool";
 import { prompt } from "./prompt";
 
-export const developerAgent = new Agent({
-  name: "Developer Agent",
+export const mastraArchitectAgent = new Agent({
+  name: "Mastra Architect",
   instructions: prompt,
   model: openai("gpt-4o-mini"),
-  tools: async () => {
-    const allTools = await mcp.getTools().catch(() => ({}));
-    return { memoryTool, ...allTools };
-  },
+  tools: { memoryTool },
 });

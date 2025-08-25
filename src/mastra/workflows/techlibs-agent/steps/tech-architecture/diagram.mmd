@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant WF as Workflow
+  participant DEV as DeveloperAgent
+  participant JT as JSONExtractor
+
+  WF->>DEV: Prompt with problemStatement, keyFindings, designSystemBrief
+  DEV-->>WF: Text response (JSON or fenced JSON)
+  WF->>JT: extractFirstJsonObject(text)
+  JT-->>WF: {techArchitecture}
+
