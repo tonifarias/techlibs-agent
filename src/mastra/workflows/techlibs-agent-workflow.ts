@@ -1,6 +1,7 @@
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 import { productOwnerAgent } from "../agents/product-owner/agent";
+import { getGithubMcpToolsets } from "../tools/github-mcp-tool";
 
 // Input schema as specified by the plan
 const initInputSchema = z.object({
@@ -238,8 +239,11 @@ context:
 - problemStatement: ${inputData.problemStatement}
 - keyFindings: ${(inputData.keyFindings ?? []).join("; ")}
 - designSystemBrief: ${inputData.designSystemBrief ?? ""}`;
-
-    const response = await agent.stream([{ role: "user", content: prompt }]);
+    // Connect GitHub MCP toolsets to the developer agent dynamically
+    const toolsets = await getGithubMcpToolsets();
+    const response = await agent.stream([{ role: "user", content: prompt }], {
+      toolsets,
+    });
     let text = "";
     for await (const chunk of response.textStream) text += chunk;
     const json = extractFirstJsonObject(text) as { techArchitecture?: string };
@@ -304,8 +308,11 @@ const tasksAndImplementation = createStep({
 Return ONLY JSON: { tasksImplementation: { tasks: string[], dependencies: string[] } }.
 
 storiesEpics: ${(inputData.storiesEpics ?? []).join("\n- ")}`;
-
-    const response = await agent.stream([{ role: "user", content: prompt }]);
+    // Connect GitHub MCP toolsets to the developer agent dynamically
+    const toolsets = await getGithubMcpToolsets();
+    const response = await agent.stream([{ role: "user", content: prompt }], {
+      toolsets,
+    });
     let text = "";
     for await (const chunk of response.textStream) text += chunk;
     const json = extractFirstJsonObject(text) as {
