@@ -3,8 +3,8 @@ import { Agent } from '@mastra/core/agent';
 import { memoryTool } from '../../tools/memory-tool';
 import { prompt } from './prompt';
 
-export const bddSpecialistAgent = new Agent({
-  name: 'BDD Specialist',
+export const codeReviewerAgent = new Agent({
+  name: 'Code Reviewer',
   instructions: prompt,
   model: openai('gpt-4o-mini'),
   tools: { memoryTool },

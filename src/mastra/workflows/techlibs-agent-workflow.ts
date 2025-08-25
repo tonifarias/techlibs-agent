@@ -1,6 +1,6 @@
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
-import { productOwner } from "../agents/productOwner";
+import { productOwnerAgent } from "../agents/product-owner/agent";
 
 // Input schema as specified by the plan
 const initInputSchema = z.object({
@@ -96,7 +96,7 @@ companyContext: ${inputData.companyContext ?? ""}
 constraints: ${(inputData.constraints ?? []).join(", ")}
 assets: ${(inputData.assets ?? []).join(", ")}`;
 
-    const { text } = await productOwner.generate([
+    const { text } = await productOwnerAgent.generate([
       {
         role: "user",
         content: prompt,
@@ -135,7 +135,7 @@ const userResearch = createStep({
       throw new Error("Cannot proceed: keyFindings is empty");
     }
 
-    const agent = mastra?.getAgent("productOwner");
+    const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
     const prompt = `You are a Product Owner.
@@ -178,7 +178,7 @@ const designSystemBriefStep = createStep({
   inputSchema: stateSchema,
   outputSchema: stateSchema,
   execute: async ({ inputData, mastra }) => {
-    const agent = mastra?.getAgent("productOwner");
+    const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
     const prompt = `Draft a design system brief summarizing tokens and components.
@@ -272,7 +272,7 @@ const storiesAndEpics = createStep({
   inputSchema: stateSchema,
   outputSchema: stateSchema,
   execute: async ({ inputData, mastra }) => {
-    const agent = mastra?.getAgent("bddSpecialist");
+    const agent = mastra?.getAgent("bddSpecialistAgent");
     if (!agent) throw new Error("BDD Specialist agent not found");
 
     const prompt = `Convert useCases into epics and user stories with Given/When/Then.
@@ -325,7 +325,7 @@ const definitionOfDone = createStep({
   inputSchema: stateSchema,
   outputSchema: stateSchema,
   execute: async ({ inputData, mastra }) => {
-    const agent = mastra?.getAgent("codeReviewer");
+    const agent = mastra?.getAgent("codeReviewerAgent");
     if (!agent) throw new Error("Code Reviewer agent not found");
 
     const prompt = `Create a Definition of Done covering: tests, quality gates, CI, code review.
@@ -356,7 +356,7 @@ const roadmapPlan = createStep({
   inputSchema: stateSchema,
   outputSchema: stateSchema,
   execute: async ({ inputData, mastra }) => {
-    const agent = mastra?.getAgent("productOwner");
+    const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
     const prompt = `Create a concise roadmap plan with milestones and rough timelines.
