@@ -1,0 +1,37 @@
+flowchart TD
+  A[Init Input] --> B[AI Research & Discovery]
+  B --> C[User Research]
+  C --> D[Design System Brief]
+  D --> G1{Design Approval Gate}
+  G1 -->|approved| E[Tech Architecture]
+  E --> G2{Architecture Approval Gate}
+  G2 -->|approved| F[Stories & Epics]
+  F --> H[Tasks & Implementation]
+  H --> I[Definition of Done]
+  I --> J[Roadmap Plan]
+  J --> K[Assemble PRD]
+
+  subgraph Agents & Tools
+    P1[Product Owner Agent]
+    P2[BDD Specialist Agent]
+    P3[Developer Agent]
+    P4[Code Reviewer Agent]
+    T1[JSON Extractor Tool]
+  end
+
+  B -.uses .-> P1
+  C -.uses .-> P1
+  D -.uses .-> P1
+  E -.uses .-> P3
+  F -.uses .-> P2
+  H -.uses .-> P3
+  I -.uses .-> P4
+  B -.calls .-> T1
+  C -.calls .-> T1
+  D -.calls .-> T1
+  E -.calls .-> T1
+  F -.calls .-> T1
+  H -.calls .-> T1
+  I -.calls .-> T1
+  J -.calls .-> T1
+
