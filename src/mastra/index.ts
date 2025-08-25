@@ -4,6 +4,7 @@ import { PinoLogger } from "@mastra/loggers";
 import { bddSpecialistAgent } from "./agents/bdd-specialist/agent";
 import { codeReviewerAgent } from "./agents/code-reviewer/agent";
 import { developerAgent } from "./agents/developer-agent/agent";
+import { parallizerAgent } from "./agents/parallizer/agent";
 import { productOwnerAgent } from "./agents/product-owner/agent";
 import { weatherAgent } from "./agents/weather-agent";
 import { memoryWorkflow } from "./workflows/memory-workflow";
@@ -12,13 +13,7 @@ import { weatherWorkflow } from "./workflows/weather-workflow";
 
 export const mastra = new Mastra({
   workflows: { weatherWorkflow, memoryWorkflow, techlibsAgentWorkflow },
-  agents: { 
-    weatherAgent, 
-    productOwnerAgent, 
-    bddSpecialistAgent, 
-    developerAgent, 
-    codeReviewerAgent 
-  },
+  agents: { weatherAgent, productOwnerAgent, bddSpecialistAgent, developerAgent, codeReviewerAgent, parallizerAgent },
   storage: new LibSQLStore({
     // Use persistent storage for telemetry, evals, etc.
     url: "file:../mastra.db",
