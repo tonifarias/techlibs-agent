@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant WF as Workflow
+  participant BDD as BDDSpecialistAgent
+  participant JT as JSONExtractor
+
+  WF->>BDD: Prompt with useCases
+  BDD-->>WF: Text response (JSON or fenced JSON)
+  WF->>JT: extractFirstJsonObject(text)
+  JT-->>WF: {storiesEpics}
+
