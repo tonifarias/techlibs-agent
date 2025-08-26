@@ -40,6 +40,7 @@ assets: ${(inputData.assets ?? []).join(", ")}`;
     }
 
     return {
+      ...inputData,
       researchBrief: json.researchBrief,
       keyFindings: json.keyFindings,
     };
