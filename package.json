@@ -21,18 +21,16 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.0",
-    "@andrebuzeli/github-mcp-v2": "^6.0.4",
-    "@cyanheads/git-mcp-server": "^2.3.2",
     "@mastra/core": "^0.14.1",
     "@mastra/libsql": "^0.13.4",
     "@mastra/loggers": "^0.10.7",
     "@mastra/mcp": "^0.10.12",
     "@mastra/memory": "^0.13.1",
-    "@modelcontextprotocol/server-github": "^2025.4.8",
     "@modelcontextprotocol/server-memory": "2025.8.4",
     "zod": "^3"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.9.0",
     "@types/node": "^24.3.0",
     "mastra": "^0.10.23",
     "typescript": "^5.9.2",

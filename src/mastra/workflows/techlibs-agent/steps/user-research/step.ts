@@ -1,5 +1,6 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
+import { sharedContext, getProjectId } from "../../utils/shared-context";
 import { userResearchInputSchema, userResearchOutputSchema } from "./dto";
 
 export const userResearch = createStep({
@@ -15,19 +16,37 @@ export const userResearch = createStep({
     const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
-    const prompt = `You are a Product Owner conducting user research analysis. Based on the problem statement and research findings, create detailed user personas, customer journeys, and use cases.
+    // Get or recover project context from accumulated state
+    const projectId = inputData._projectId || getProjectId(inputData);
+    let relevantContext = sharedContext.getRelevantContext(projectId, "user-research");
+    
+    // If context doesn't exist, initialize it with current state
+    if (!sharedContext.getContext(projectId)) {
+      console.log(`[User Research] Context not found, initializing for project: ${projectId}`);
+      sharedContext.initializeContext(projectId, inputData);
+      relevantContext = sharedContext.getRelevantContext(projectId, "user-research");
+    }
+    
+    console.log(`[User Research] Using context for project: ${projectId}`);
+    
+    const prompt = `You are a UX Research Specialist conducting comprehensive user research analysis. Build upon previous research insights to create detailed, actionable user research outputs.
 
-## Problem Statement
+## CONTEXT FROM PREVIOUS ANALYSIS
+### Problem Statement
 ${inputData.problemStatement}
 
-## Research Brief
+### Research Brief
 ${inputData.researchBrief}
 
-## Key Findings
+### Key Research Findings
 ${(inputData.keyFindings ?? []).map((finding, i) => `${i + 1}. ${finding}`).join('\n')}
 
-## Task
-Create comprehensive user research outputs:
+### Previous Context
+${relevantContext.keyDecisions?.length > 0 ? '**Previous Decisions:** ' + relevantContext.keyDecisions.map(d => d.decision).join(', ') : ''}
+${relevantContext.extractedRequirements?.length > 0 ? '**Extracted Requirements:** ' + relevantContext.extractedRequirements.slice(0, 3).join(', ') : ''}
+
+## RESEARCH TASK
+Create comprehensive, specific user research outputs that directly address the stated problem:
 
 1. **Personas**: Detailed user personas with demographics, goals, pain points, and technical background
 2. **Journeys**: Customer journey maps showing user interactions and touchpoints
@@ -51,7 +70,13 @@ Ensure personas and journeys are detailed strings, and useCases is an array with
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await agent.generate([{ role: "user", content: prompt }]);
+        const response = await agent.generate(
+          [{ role: "user", content: prompt }],
+          {
+            resourceId: `workflow-${projectId.slice(-10)}`,
+            threadId: `user-research-${Date.now()}`,
+          }
+        );
         const text = response.text;
         const json = extractFirstJsonObject(text) as {
           personas?: string;
@@ -60,12 +85,32 @@ Ensure personas and journeys are detailed strings, and useCases is an array with
         };
         
         if (json.personas && json.journeys && json.useCases && json.useCases.length > 0) {
-          return {
+          const result = {
             ...inputData,
             personas: json.personas,
             journeys: json.journeys,
             useCases: json.useCases,
+            _projectId: projectId, // Pass project ID to next step
           };
+          
+          // Update shared context with results
+          sharedContext.updateContext(projectId, "user-research", result, {
+            decisions: [{
+              decision: "Primary user personas identified",
+              rationale: "Based on research findings and market analysis"
+            }],
+            requirements: json.useCases.slice(0, 3), // Extract top use cases as requirements
+            references: ["ai-research-and-discovery"] // Reference previous step
+          });
+
+          // Validate output quality
+          const validation = sharedContext.validateContextQuality(projectId, "user-research", result);
+          if (!validation.passed && attempt < maxRetries) {
+            throw new Error(`Quality validation failed: ${validation.feedback.join(', ')}`);
+          }
+
+          console.log(`[User Research] Successfully completed with quality score: ${validation.score}%`);
+          return result;
         } else {
           throw new Error(`Invalid user research data (attempt ${attempt}/${maxRetries})`);
         }
