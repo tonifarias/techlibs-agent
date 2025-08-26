@@ -272,9 +272,19 @@ export const sharedContext = new SharedContextManager();
 
 /**
  * Helper function to get project ID from workflow run context
+ * Use a consistent English-based ID to ensure continuity
  */
-export function getProjectId(workflowRunId?: string): string {
-  return workflowRunId || `project-${Date.now()}`;
+export function getProjectId(inputData?: any): string {
+  if (inputData?.problemStatement) {
+    // Create consistent ID from problem statement hash (English-friendly)
+    const cleanStatement = inputData.problemStatement
+      .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+      .slice(0, 30); // Shorter for cleaner IDs
+    return `project-${cleanStatement}-${Date.now().toString().slice(-6)}`;
+  }
+  return `project-${Date.now()}`;
 }
 
 /**

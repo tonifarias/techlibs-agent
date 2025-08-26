@@ -41,12 +41,9 @@ export const techlibsAgentWorkflow = createWorkflow({
   .then(aiResearchAndDiscovery as any)
   .then(userResearch as any)
   .then(designSystemBriefStep as any)
-  .waitForEvent("design-approval-required", designApprovalGate as any)
+  .then(designApprovalGate as any)
   .then(techArchitecture as any)
-  .waitForEvent(
-    "architecture-approval-required",
-    architectureApprovalGate as any
-  )
+  .then(architectureApprovalGate as any)
   .then(storiesAndEpics as any)
   .then(tasksAndImplementation as any)
   .then(definitionOfDone as any)

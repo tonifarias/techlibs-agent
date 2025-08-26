@@ -1,5 +1,6 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
+import { sharedContext, getProjectId, withContextValidation } from "../../utils/shared-context";
 import { aiResearchInputSchema, aiResearchOutputSchema } from "./dto";
 
 export const aiResearchAndDiscovery = createStep({
@@ -11,6 +12,12 @@ export const aiResearchAndDiscovery = createStep({
   execute: async ({ inputData, mastra }) => {
     if (!inputData) throw new Error("Input data not found");
 
+    // Initialize project context using input data
+    const projectId = getProjectId(inputData);
+    const context = sharedContext.initializeContext(projectId, inputData);
+    
+    console.log(`[AI Research] Initialized context for project: ${projectId}`);
+    
     // Enhanced context extraction from text-based inputs
     const contextSummary = {
       problemStatement: inputData.problemStatement,
@@ -55,22 +62,70 @@ Return ONLY valid JSON in this exact format:
     const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
-    const response = await agent.generate([{ role: "user", content: prompt }]);
-    const text = response.text;
-    const json = extractFirstJsonObject(text);
+    const maxRetries = 2;
+    let lastError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await agent.generate(
+          [{ role: "user", content: prompt }],
+          {
+            resourceId: `workflow-${projectId.slice(-10)}`, // Use shorter ID for resource
+            threadId: `research-${Date.now()}`,
+          }
+        );
+        
+        const text = response.text;
+        const json = extractFirstJsonObject(text);
 
-    if (
-      !json?.researchBrief ||
-      !Array.isArray(json?.keyFindings) ||
-      json.keyFindings.length === 0
-    ) {
-      throw new Error("Failed to produce researchBrief/keyFindings");
+        if (
+          !json?.researchBrief ||
+          !Array.isArray(json?.keyFindings) ||
+          json.keyFindings.length === 0
+        ) {
+          throw new Error("Failed to produce researchBrief/keyFindings");
+        }
+
+        const result = {
+          ...inputData,
+          researchBrief: json.researchBrief,
+          keyFindings: json.keyFindings,
+        };
+
+        // Store project ID in result for next steps and validate quality
+        result._projectId = projectId;
+        
+        // Update shared context with results and metadata
+        sharedContext.updateContext(projectId, "ai-research-and-discovery", result, {
+          decisions: [{
+            decision: "Research approach defined",
+            rationale: "Based on problem analysis and available context"
+          }],
+          requirements: json.keyFindings.slice(0, 3) // Extract top requirements
+        });
+
+        // Validate output quality
+        const validation = sharedContext.validateContextQuality(projectId, "ai-research-and-discovery", result);
+        if (!validation.passed && attempt < maxRetries) {
+          throw new Error(`Quality validation failed: ${validation.feedback.join(', ')}`);
+        }
+
+        console.log(`[AI Research] Successfully completed with quality score: ${validation.score}% for project: ${projectId}`);
+        return result;
+        
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`[AI Research] Attempt ${attempt}/${maxRetries} failed:`, error.message);
+        
+        if (attempt === maxRetries) {
+          throw new Error(`AI Research failed after ${maxRetries} attempts. Last error: ${lastError.message}`);
+        }
+        
+        // Brief delay before retry
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
     }
 
-    return {
-      ...inputData,
-      researchBrief: json.researchBrief,
-      keyFindings: json.keyFindings,
-    };
+    throw lastError || new Error("Unexpected error in AI Research step");
   },
 });
