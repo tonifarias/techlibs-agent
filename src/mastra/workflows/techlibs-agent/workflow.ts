@@ -30,7 +30,7 @@ export const getAgentByName = (name: string) => {
 };
 
 export const techlibsAgentWorkflow = createWorkflow({
-  id: "techlibs-agent-workflow",
+  id: "techlibs-agent-workflow-modular",
   inputSchema: initInputSchema,
   outputSchema: finalOutputSchema,
 })
