@@ -33,6 +33,10 @@ export const techlibsAgentWorkflow = createWorkflow({
   id: "techlibs-agent-workflow-modular",
   inputSchema: initInputSchema,
   outputSchema: finalOutputSchema,
+  // Enhanced workflow configuration
+  description: "Comprehensive AI-powered PRD generation workflow with multi-agent orchestration",
+  version: "2.0.0",
+  tags: ["product", "requirements", "ai", "workflow"],
 })
   .then(aiResearchAndDiscovery as any)
   .then(userResearch as any)
