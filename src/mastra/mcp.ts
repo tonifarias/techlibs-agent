@@ -1,8 +1,6 @@
 import { MCPClient } from "@mastra/mcp";
 
-const GITHUB_MCP_URL =
-  process.env.GITHUB_MCP_URL ?? "https://api.githubcopilot.com/mcp/";
-const GITHUB_MCP_PAT = process.env.GITHUB_MCP_PAT;
+const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN || process.env.GITHUB_MCP_PAT;
 const FIREFLIES_MCP_URL =
   process.env.FIREFLIES_MCP_URL ?? "https://api.fireflies.ai/mcp";
 const FIREFLIES_API_KEY = process.env.FIREFLIES_API_KEY;
@@ -23,14 +21,13 @@ export const mcp = new MCPClient({
           },
         }
       : {}),
-    ...(GITHUB_MCP_PAT
+    ...(GITHUB_ACCESS_TOKEN
       ? {
           github: {
-            url: new URL(GITHUB_MCP_URL),
-            requestInit: {
-              headers: {
-                Authorization: `Bearer ${GITHUB_MCP_PAT}`,
-              },
+            command: "npx",
+            args: ["@andrebuzeli/github-mcp-v2"],
+            env: {
+              GITHUB_ACCESS_TOKEN: GITHUB_ACCESS_TOKEN,
             },
           },
         }
