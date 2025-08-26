@@ -1,14 +1,12 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import {
-  designSystemBriefInputSchema,
-  designSystemBriefOutputSchema,
-} from "./dto";
+import { designSystemBriefOutputSchema } from "./dto";
+import { userResearchOutputSchema } from "../../../user-research/steps/user-research/dto";
 
 export const designSystemBriefStep = createStep({
   id: "design-system-brief",
   description: "Draft color palette and component inventory summary",
-  inputSchema: designSystemBriefInputSchema,
+  inputSchema: userResearchOutputSchema,
   outputSchema: designSystemBriefOutputSchema,
   execute: async ({ inputData, mastra }) => {
     const agent = mastra?.getAgent("productOwnerAgent");
@@ -21,8 +19,7 @@ Return ONLY JSON: { designSystemBrief: string }.
 context:
 - problemStatement: ${inputData.problemStatement}
 - personas: ${inputData.personas ?? ""}
-- journeys: ${inputData.journeys ?? ""}
-- useCases: ${(inputData.useCases ?? []).join(", ")}`;
+- journeys: ${inputData.journeys ?? ""}`;
 
     const response = await agent.stream([{ role: "user", content: prompt }]);
     let text = "";
@@ -31,6 +28,10 @@ context:
     if (!json.designSystemBrief)
       throw new Error("Failed to produce designSystemBrief");
 
-    return { designSystemBrief: json.designSystemBrief };
+    return {
+      keyFindings: inputData.keyFindings,
+      problemStatement: inputData.problemStatement,
+      designSystemBrief: json.designSystemBrief,
+    };
   },
 });

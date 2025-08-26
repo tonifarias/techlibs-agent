@@ -113,10 +113,12 @@ const firefliesExecuteStep = createStep({
   },
 });
 
-export const firefliesWorkflow = createWorkflow({
+const firefliesWorkflow = createWorkflow({
   id: "fireflies-meeting-analysis",
   inputSchema: firefliesInputSchema,
   outputSchema: firefliesOutputSchema,
-}).then(firefliesExecuteStep);
+})
+  .then(firefliesExecuteStep)
+  .commit();
 
-firefliesWorkflow.commit();
+export default firefliesWorkflow;

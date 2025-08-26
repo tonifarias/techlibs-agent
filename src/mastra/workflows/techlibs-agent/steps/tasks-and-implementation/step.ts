@@ -1,14 +1,12 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import {
-  tasksAndImplementationInputSchema,
-  tasksAndImplementationOutputSchema,
-} from "./dto";
+import { tasksAndImplementationOutputSchema } from "./dto";
+import { storiesAndEpicsOutputSchema } from "../stories-and-epics/dto";
 
 export const tasksAndImplementation = createStep({
   id: "tasks-and-implementation",
   description: "Break stories into tasks/dependencies with estimates",
-  inputSchema: tasksAndImplementationInputSchema,
+  inputSchema: storiesAndEpicsOutputSchema,
   outputSchema: tasksAndImplementationOutputSchema,
   execute: async ({ inputData, mastra }) => {
     const agent = mastra?.getAgent("developerAgent");

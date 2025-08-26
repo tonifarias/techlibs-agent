@@ -1,11 +1,12 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import { storiesAndEpicsInputSchema, storiesAndEpicsOutputSchema } from "./dto";
+import { storiesAndEpicsOutputSchema } from "./dto";
+import { userResearchOutputSchema } from "../../../user-research/steps/user-research/dto";
 
 export const storiesAndEpics = createStep({
   id: "stories-and-epics",
   description: "Convert use cases into epics and BDD scenarios",
-  inputSchema: storiesAndEpicsInputSchema,
+  inputSchema: userResearchOutputSchema,
   outputSchema: storiesAndEpicsOutputSchema,
   execute: async ({ inputData, mastra }) => {
     const agent = mastra?.getAgent("bddSpecialistAgent");

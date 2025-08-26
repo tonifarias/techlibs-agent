@@ -1,22 +1,21 @@
 import { createStep } from "@mastra/core/workflows";
 import { z } from "zod";
-import { designSystemBriefInputSchema } from "../steps/design-system-brief/dto";
+import { designSystemBriefOutputSchema } from "../steps/design-system-brief/dto";
 
 const approvalResumeSchema = z.object({ approved: z.boolean() });
+
+export const approvedDesignSystemBriefOutputSchema = designSystemBriefOutputSchema.merge(approvalResumeSchema);
 
 export const designApprovalGate = createStep({
   id: "design-approval-gate",
   description: "Gate that requires external approval for design system brief",
-  inputSchema: designSystemBriefInputSchema.extend({
-    designSystemBrief: z.string().optional(),
-  }),
-  outputSchema: designSystemBriefInputSchema.extend({
-    designApproved: z.boolean().optional(),
-  }),
+  inputSchema: designSystemBriefOutputSchema,
+  outputSchema: approvedDesignSystemBriefOutputSchema,
   resumeSchema: approvalResumeSchema,
-  execute: async ({ inputData, resumeData }) => {
+  execute: async ({ inputData, resumeData, suspend }) => {
     if (!resumeData?.approved) {
-      throw new Error("Design system brief not approved");
+      await suspend({});
+      return inputData;
     }
     return { ...inputData, designApproved: true } as any;
   },

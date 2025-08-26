@@ -1,14 +1,12 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import {
-  definitionOfDoneInputSchema,
-  definitionOfDoneOutputSchema,
-} from "./dto";
+import { definitionOfDoneOutputSchema } from "./dto";
+import { tasksAndImplementationOutputSchema } from "../tasks-and-implementation/dto";
 
 export const definitionOfDone = createStep({
   id: "definition-of-done",
   description: "Produce DoD including testing, quality gates, review rules",
-  inputSchema: definitionOfDoneInputSchema,
+  inputSchema: tasksAndImplementationOutputSchema,
   outputSchema: definitionOfDoneOutputSchema,
   execute: async ({ inputData, mastra }) => {
     const agent = mastra?.getAgent("codeReviewerAgent");
@@ -31,6 +29,10 @@ context:
     if (!json.definitionOfDone)
       throw new Error("Failed to produce definitionOfDone");
 
-    return { definitionOfDone: json.definitionOfDone };
+    return {
+      storiesEpics: inputData.storiesEpics,
+      tasksImplementation: inputData.tasksImplementation,
+      definitionOfDone: json.definitionOfDone,
+    };
   },
 });

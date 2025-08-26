@@ -1,13 +1,14 @@
 import { createStep } from "@mastra/core/workflows";
+import { roadmapPlanOutputSchema } from "./dto";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import { roadmapPlanInputSchema, roadmapPlanOutputSchema } from "./dto";
+import { userResearchOutputSchema } from "../../../user-research/steps/user-research/dto";
 
 export const roadmapPlan = createStep({
   id: "roadmap-plan",
   description: "Build roadmap milestones with timelines and resources",
-  inputSchema: roadmapPlanInputSchema,
+  inputSchema: userResearchOutputSchema,
   outputSchema: roadmapPlanOutputSchema,
-  execute: async ({ mastra }) => {
+  execute: async ({ mastra, inputData }) => {
     const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
@@ -20,6 +21,6 @@ Return ONLY JSON: { roadmapPlan: string }.`;
     const json = extractFirstJsonObject(text) as { roadmapPlan?: string };
     if (!json.roadmapPlan) throw new Error("Failed to produce roadmapPlan");
 
-    return { roadmapPlan: json.roadmapPlan };
+    return { ...inputData, roadmapPlan: json.roadmapPlan };
   },
 });

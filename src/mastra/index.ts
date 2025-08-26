@@ -9,19 +9,20 @@ import { mastraArchitectAgent } from "./agents/mastra-architect/agent";
 import { parallizerAgent } from "./agents/parallizer/agent";
 import { productOwnerAgent } from "./agents/product-owner/agent";
 import { weatherAgent } from "./agents/weather-agent";
-import { firefliesWorkflow } from "./workflows/fireflies-workflow";
 import { memoryWorkflow } from "./workflows/memory-workflow";
-import { techlibsAgentWorkflow } from "./workflows/techlibs-agent-workflow";
-import { techlibsAgentWorkflow as modularTechlibsWorkflow } from "./workflows/techlibs-agent/workflow";
 import { weatherWorkflow } from "./workflows/weather-workflow";
+
+import firefliesWorkflow from "./workflows/fireflies";
+import techlibsAgentWorkflow from "./workflows/techlibs-agent";
+import researchWorkflow from "./workflows/user-research";
 
 export const mastra = new Mastra({
   workflows: {
     weatherWorkflow,
     memoryWorkflow,
     techlibsAgentWorkflow,
-    modularTechlibsWorkflow,
     firefliesWorkflow,
+    researchWorkflow,
   },
   agents: {
     weatherAgent,

@@ -1,19 +1,14 @@
 import { z } from "zod";
 
-export const definitionOfDoneInputSchema = z.object({
-  tasksImplementation: z
-    .object({
-      tasks: z.array(z.string()).min(1),
-      dependencies: z.array(z.string()).optional().default([]),
-    })
-    .optional(),
-});
-
 export const definitionOfDoneOutputSchema = z.object({
+  storiesEpics: z.array(z.string()),
+  tasksImplementation: z.object({
+    tasks: z.array(z.string()),
+    dependencies: z.array(z.string()),
+  }),
   definitionOfDone: z.string(),
 });
 
-export type DefinitionOfDoneInput = z.infer<typeof definitionOfDoneInputSchema>;
 export type DefinitionOfDoneOutput = z.infer<
   typeof definitionOfDoneOutputSchema
 >;

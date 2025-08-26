@@ -1,14 +1,12 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import {
-  techArchitectureInputSchema,
-  techArchitectureOutputSchema,
-} from "./dto";
+import { techArchitectureOutputSchema } from "./dto";
+import { approvedDesignSystemBriefOutputSchema } from "../../gates/design-approval-gate";
 
 export const techArchitecture = createStep({
   id: "tech-architecture",
   description: "Draft system architecture, API surface, storage choices",
-  inputSchema: techArchitectureInputSchema,
+  inputSchema: approvedDesignSystemBriefOutputSchema,
   outputSchema: techArchitectureOutputSchema,
   execute: async ({ inputData, mastra }) => {
     const agent = mastra?.getAgent("developerAgent");
@@ -29,6 +27,9 @@ context:
     if (!json.techArchitecture)
       throw new Error("Failed to produce techArchitecture");
 
-    return { techArchitecture: json.techArchitecture };
+    return {
+      designSystemBrief: inputData.designSystemBrief,
+      techArchitecture: json.techArchitecture,
+    };
   },
 });

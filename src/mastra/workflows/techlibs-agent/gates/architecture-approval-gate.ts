@@ -1,23 +1,22 @@
 import { createStep } from "@mastra/core/workflows";
 import { z } from "zod";
-import { techArchitectureInputSchema } from "../steps/tech-architecture/dto";
+import { techArchitectureOutputSchema } from "../steps/tech-architecture/dto";
 
-const approvalResumeSchema = z.object({ approved: z.boolean() });
+const approvalResumeSchema = z.object({ approved: z.boolean().optional() });
+
+export const approvedTechArchitectureOutputSchema = techArchitectureOutputSchema.merge(approvalResumeSchema);
 
 export const architectureApprovalGate = createStep({
   id: "architecture-approval-gate",
   description: "Gate that requires external approval for architecture",
-  inputSchema: techArchitectureInputSchema.extend({
-    techArchitecture: z.string().optional(),
-  }),
-  outputSchema: techArchitectureInputSchema.extend({
-    architectureApproved: z.boolean().optional(),
-  }),
+  inputSchema: techArchitectureOutputSchema,
+  outputSchema: approvedTechArchitectureOutputSchema,
   resumeSchema: approvalResumeSchema,
-  execute: async ({ inputData, resumeData }) => {
+  execute: async ({ inputData, resumeData, suspend }) => {
     if (!resumeData?.approved) {
-      throw new Error("Tech architecture not approved");
+      await suspend({});
+      return inputData;
     }
-    return { ...inputData, architectureApproved: true } as any;
+    return { ...inputData, approved: true } as any;
   },
 });

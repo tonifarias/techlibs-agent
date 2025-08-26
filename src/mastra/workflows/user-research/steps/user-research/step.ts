@@ -1,11 +1,12 @@
 import { createStep } from "@mastra/core/workflows";
+import { userResearchOutputSchema } from "./dto";
+import { researchOutputSchema } from "../research-and-discovery/dto";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import { userResearchInputSchema, userResearchOutputSchema } from "./dto";
 
 export const userResearch = createStep({
   id: "user-research",
   description: "Produce personas, journeys, and use cases",
-  inputSchema: userResearchInputSchema,
+  inputSchema: researchOutputSchema,
   outputSchema: userResearchOutputSchema,
   execute: async ({ inputData, mastra }) => {
     if (!inputData.keyFindings || inputData.keyFindings.length === 0) {
@@ -40,6 +41,8 @@ keyFindings: ${(inputData.keyFindings ?? []).join("; ")}`;
     }
 
     return {
+      problemStatement: inputData.problemStatement,
+      keyFindings: inputData.keyFindings,
       personas: json.personas,
       journeys: json.journeys,
       useCases: json.useCases,

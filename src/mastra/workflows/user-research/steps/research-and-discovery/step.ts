@@ -1,13 +1,13 @@
 import { createStep } from "@mastra/core/workflows";
+import { researchInputSchema, researchOutputSchema } from "./dto";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
-import { aiResearchInputSchema, aiResearchOutputSchema } from "./dto";
 
-export const aiResearchAndDiscovery = createStep({
-  id: "ai-research-and-discovery",
+export const researchAndDiscovery = createStep({
+  id: "research-and-discovery",
   description:
     "Gather market/competitor/feasibility via agents/tools and summarize",
-  inputSchema: aiResearchInputSchema,
-  outputSchema: aiResearchOutputSchema,
+  inputSchema: researchInputSchema,
+  outputSchema: researchOutputSchema,
   execute: async ({ inputData, mastra }) => {
     if (!inputData) throw new Error("Input data not found");
 
@@ -40,6 +40,7 @@ assets: ${(inputData.assets ?? []).join(", ")}`;
     }
 
     return {
+      problemStatement: inputData.problemStatement,
       researchBrief: json.researchBrief,
       keyFindings: json.keyFindings,
     };
