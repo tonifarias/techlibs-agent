@@ -15,7 +15,7 @@ import { userResearch } from "./techlibs-agent/steps/user-research/step";
 
 // Define the workflow with suspend/resume gates using waitForEvent
 const techlibsAgentWorkflow = createWorkflow({
-  id: "techlibs-agent-workflow",
+  id: "techlibs-agent-workflow-legacy",
   inputSchema: initInputSchema,
   outputSchema: finalOutputSchema,
 })
