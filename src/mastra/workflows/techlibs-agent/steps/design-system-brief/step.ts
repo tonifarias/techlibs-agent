@@ -1,5 +1,6 @@
 import { createStep } from "@mastra/core/workflows";
 import { extractFirstJsonObject } from "../../../../tools/json-extractor-tool";
+import { sharedContext, getProjectId } from "../../utils/shared-context";
 import {
   designSystemBriefInputSchema,
   designSystemBriefOutputSchema,
@@ -7,29 +8,53 @@ import {
 
 export const designSystemBriefStep = createStep({
   id: "design-system-brief",
-  description: "Draft color palette and component inventory summary",
+  description: "Create comprehensive design system brief with context-aware recommendations",
   inputSchema: designSystemBriefInputSchema,
   outputSchema: designSystemBriefOutputSchema,
   execute: async ({ inputData, mastra }) => {
+    // Get or recover project context
+    const projectId = inputData._projectId || getProjectId(inputData);
+    let relevantContext = sharedContext.getRelevantContext(projectId, "design-system-brief");
+    
+    // Initialize context if not found
+    if (!sharedContext.getContext(projectId)) {
+      console.log(`[Design Brief] Context not found, initializing for project: ${projectId}`);
+      sharedContext.initializeContext(projectId, inputData);
+      relevantContext = sharedContext.getRelevantContext(projectId, "design-system-brief");
+    }
+    
+    console.log(`[Design Brief] Using context for project: ${projectId}`);
+
     const agent = mastra?.getAgent("productOwnerAgent");
     if (!agent) throw new Error("Product Owner agent not found");
 
-    const prompt = `You are a Design System Architect. Create a comprehensive design system brief based on the user research and project context.
+    const prompt = `You are a Design System Architect with expertise in creating scalable, user-centered design systems. Build upon previous research insights to create a comprehensive design system brief.
 
-## Problem Statement
+## CONTEXT FROM PREVIOUS ANALYSIS
+### Problem Statement
 ${inputData.problemStatement}
 
-## User Personas
+### Company Context
+${inputData.companyContext || 'Not specified'}
+
+### Target Audience Insights
+${inputData.targetAudience || 'Not specified'}
+
+### User Personas
 ${inputData.personas ?? "Not available"}
 
-## Customer Journeys
+### Customer Journeys
 ${inputData.journeys ?? "Not available"}
 
-## Use Cases
+### Use Cases
 ${(inputData.useCases ?? []).map((uc, i) => `${i + 1}. ${uc}`).join('\n')}
 
-## Task
-Create a detailed design system brief that includes:
+### Previous Context
+${relevantContext.keyDecisions?.length > 0 ? '**Previous Decisions:** ' + relevantContext.keyDecisions.map(d => d.decision).join(', ') : ''}
+${relevantContext.extractedRequirements?.length > 0 ? '**Key Requirements:** ' + relevantContext.extractedRequirements.slice(0, 3).join(', ') : ''}
+
+## DESIGN SYSTEM TASK
+Create a detailed design system brief that addresses the specific problem and user needs identified. Include:
 
 1. **Color Palette**: Primary, secondary, neutral colors with semantic naming
 2. **Typography**: Font families, sizes, weights, line heights
@@ -49,12 +74,45 @@ Ensure the designSystemBrief is a detailed string with proper formatting and cov
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const response = await agent.generate([{ role: "user", content: prompt }]);
+        const response = await agent.generate(
+          [{ role: "user", content: prompt }],
+          {
+            resourceId: `workflow-${projectId.slice(-10)}`,
+            threadId: `design-brief-${Date.now()}`,
+          }
+        );
         const text = response.text;
         const json = extractFirstJsonObject(text) as { designSystemBrief?: string };
         
         if (json.designSystemBrief && json.designSystemBrief.length > 50) {
-          return { ...inputData, designSystemBrief: json.designSystemBrief };
+          const result = {
+            ...inputData,
+            designSystemBrief: json.designSystemBrief,
+            _projectId: projectId, // Pass project ID to next step
+          };
+          
+          // Update shared context with results
+          sharedContext.updateContext(projectId, "design-system-brief", result, {
+            decisions: [{
+              decision: "Design system architecture defined",
+              rationale: "Based on user research, personas, and use cases"
+            }],
+            requirements: [
+              "Consistent visual language",
+              "Scalable component library", 
+              "Accessible design tokens"
+            ],
+            references: ["user-research"] // Reference previous step
+          });
+
+          // Validate output quality
+          const validation = sharedContext.validateContextQuality(projectId, "design-system-brief", result);
+          if (!validation.passed && attempt < maxRetries) {
+            throw new Error(`Quality validation failed: ${validation.feedback.join(', ')}`);
+          }
+
+          console.log(`[Design Brief] Successfully completed with quality score: ${validation.score}%`);
+          return result;
         } else {
           throw new Error(`Invalid or too short designSystemBrief (attempt ${attempt}/${maxRetries})`);
         }
